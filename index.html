@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Habit Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Baloo+2:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff7fb;--grid:#bcd8f0;--ink:#44597a;--btnink:#44597a;--paper:#ffffff;--pink:#f27cae;--lilac:#f8b3d0;--mint:#a9d0f2;--butter:#a9d0f2;--sky:#a9d0f2;--line:#eebbd2;--mute:#6d86a8;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;color:var(--ink);font-family:'Patrick Hand','Comic Sans MS',system-ui,sans-serif;font-size:1.12rem;line-height:1.4;min-height:100vh;background-color:var(--bg);background-image:repeating-linear-gradient(transparent 0 31px,var(--grid) 31px 32px)}
+main{max-width:620px;margin:0 auto;padding:16px 14px 56px}
+h1,h2{font-family:'Caveat','Segoe Script',cursive;font-weight:700;margin:0;line-height:1}
+h1{font-size:clamp(3.2rem,15vw,4.6rem)}h2{font-size:2rem}
+button,input,textarea{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+nav{display:flex;gap:10px;justify-content:center;margin:6px 0 22px}
+nav button{font-family:'Caveat',cursive;font-size:1.5rem;font-weight:700;padding:2px 18px;background:var(--paper);border:2px solid var(--ink);border-radius:14px 20px 12px 22px/20px 12px 22px 14px;cursor:pointer;transform:rotate(1deg)}
+nav button:nth-child(2){transform:rotate(-1.5deg)}
+nav button[aria-current=page]{background:var(--butter)}
+.panel{position:relative;background:var(--paper);border:2px dashed var(--ink);border-radius:16px 24px 14px 26px/26px 14px 24px 16px;padding:22px 16px 16px;margin:22px 0;box-shadow:3px 4px 0 var(--line)}
+.panel:nth-of-type(odd){transform:rotate(-.5deg)}.panel:nth-of-type(even){transform:rotate(.4deg)}
+.panel::before{content:'';position:absolute;top:-13px;left:50%;width:86px;height:24px;margin-left:-43px;transform:rotate(-3deg);z-index:2;background:radial-gradient(circle at 5px 5px,#fff 0 2px,transparent 2.6px) 0 0/10px 10px,var(--pink);opacity:.93}
+.panel:nth-of-type(even)::before{background:radial-gradient(circle at 5px 5px,#fff 0 2px,transparent 2.6px) 0 0/10px 10px,var(--mint);transform:rotate(2.5deg)}
+.hero{text-align:center;padding:26px 10px 20px}
+.hero p{font-family:'Caveat',cursive;font-size:1.9rem;font-weight:600;margin:6px 0 18px}
+.dd{position:absolute;transform:rotate(var(--r,0deg))}
+.squig{display:block;margin:2px auto 0}
+.star{clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes shim{to{background-position:9px 6px,-7px 8px,5px -9px,-6px -5px,8px 7px,0 0}}
+.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mhead button{width:42px;height:42px;border-radius:50%;border:2px solid var(--ink);background:var(--butter);color:var(--btnink);font-size:1.3rem;cursor:pointer}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cal .dow{font-family:'Caveat',cursive;font-size:1.2rem;font-weight:700;color:var(--mute)}
+.day{position:relative;aspect-ratio:1;border:2px solid transparent;border-radius:50% 45% 50% 48%;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+.day.today{border-color:var(--ink);border-style:dashed}
+.day[aria-pressed=true]{background:var(--butter);color:var(--btnink)}
+.day.note::after{content:'';position:absolute;top:4px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--pink);border:1.5px solid var(--ink)}
+.mini{width:58%;max-width:26px;aspect-ratio:1;background:var(--line)}.mini.part{background:var(--lilac)}
+.pill{font-family:'Caveat',cursive;font-size:1.5rem;font-weight:700;border:2px solid var(--ink);background:var(--pink);color:var(--btnink);border-radius:20px 14px 22px 12px/14px 22px 12px 20px;padding:2px 20px;cursor:pointer;box-shadow:2px 3px 0 var(--ink)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:2px dotted var(--line)}
+.hrow:first-of-type{border-top:0}
+.hname{font-size:1.25rem}
+.hname button{display:block;border:0;background:none;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:0}
+.stk{flex:none;position:relative;width:52px;height:52px;border:0;padding:0;cursor:pointer;background:var(--ink)}
+.stk::after{content:'';position:absolute;inset:6%;clip-path:inherit;background:var(--paper)}
+.stk.done::after{display:none}
+.add{display:flex;gap:10px;margin-top:8px}
+.add input{flex:1;min-width:0;padding:8px 14px;border:2px solid var(--ink);border-radius:18px 12px 20px 12px;background:var(--bg)}
+textarea{width:100%;min-height:92px;resize:vertical;padding:6px 12px;border:2px solid var(--ink);border-radius:14px 20px 12px 18px;background:var(--paper);background-image:repeating-linear-gradient(transparent 0 25px,var(--sky) 25px 26px);line-height:26px}
+.mute{color:var(--mute);font-size:1rem;margin:4px 0 0}
+.stat{margin:8px 0}.stat div:first-child{display:flex;justify-content:space-between}
+.bar{height:14px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;margin-top:3px;background:var(--paper)}
+.bar span{display:block;height:100%}
+.stick{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tiny{width:20px;height:20px;background:var(--line)}.tiny.faint{opacity:.35}
+.empty{text-align:center}
+.glitter.glitter{background:radial-gradient(circle at 20% 30%,#fff 0 1.5px,transparent 2.2px),radial-gradient(circle at 70% 20%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 50% 70%,#fff 0 1.5px,transparent 2.2px),radial-gradient(circle at 85% 80%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 30% 85%,#fff 0 1px,transparent 1.7px),linear-gradient(135deg,#ff5fa2,#ff9cc6 30%,#fff 46%,#6fb2ea 70%,#ff7db4);background-size:37px 41px,29px 31px,43px 37px,23px 27px,31px 29px,100% 100%;animation:shim 2.4s steps(3) infinite alternate}
+@media (prefers-reduced-motion:reduce){.glitter.glitter{animation:none}}
+.hero{padding:34px 14px 22px;background:repeating-linear-gradient(90deg,#d3e6f9 0 34px,#fff 34px 68px)}
+.hero>*{position:relative;z-index:1}.hero>.dd{z-index:0}
+.bubble{font-family:'Baloo 2','Arial Rounded MT Bold',system-ui,sans-serif;font-weight:800;font-size:clamp(2.1rem,10.5vw,3.5rem);line-height:1;text-transform:uppercase;color:#f27cae;text-shadow:0 -1px 0 #f9b0cf,0 3px 0 #de5a96;margin:6px 0 22px}
+.bubble svg{width:.8em;height:.8em;vertical-align:-.05em;margin-left:.12em}
+.txt{width:100%;padding:8px 14px;border:2px solid var(--ink);border-radius:18px 12px 20px 12px;background:var(--bg)}
+.chk{flex:none;width:44px;height:44px;border:2px solid var(--ink);border-radius:50% 45% 50% 48%;background:var(--paper);color:var(--btnink);font-size:1.6rem;cursor:pointer}
+.chk.on{background:var(--pink)}
+.aff{font-family:'Caveat',cursive;font-size:1.8rem;font-weight:700;margin:0 0 18px}
+</style>
+</head>
+<body>
+<main>
+<nav id="nav"></nav>
+<div id="app"></div>
+</main>
+<script>
+const KEY='habit-tracker-v1';
+let S={habits:[],log:{},notes:{}};
+try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&r.habits)S=r}catch(e){}
+S.log=S.log||{};S.notes=S.notes||{};S.aff=S.aff||{};S.goals=S.goals||{};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const[a,b,c]=s.split('-');return new Date(+a,+b-1,+c)};
+const todayS=fmt(new Date());
+const nextD=ds=>{const d=parse(ds);d.setDate(d.getDate()+1);return fmt(d)};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let view='home',sel=todayS,mo=new Date().getMonth(),yr=new Date().getFullYear();
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const done=(ds,id)=>!!(S.log[ds]&&S.log[ds][id]===true);
+const appl=ds=>S.habits.filter(h=>h.start<=ds);
+function status(ds){const hs=appl(ds);if(!hs.length)return'';const y=hs.filter(h=>done(ds,h.id)).length;return y===hs.length?'full':y?'part':''}
+function count(h,from,to){let y=0,t=0;const a=parse(h.start)>from?parse(h.start):from,b=parse(todayS)<to?parse(todayS):to;for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1)){t++;if(done(fmt(d),h.id))y++}return[y,t]}
+const dd=(id,sty)=>`<svg class="dd" aria-hidden="true" ${sty}><use href="#${id}"/></svg>`;
+
+function nav(){const t=[['home','Home'],['cal','Calendar'],['stats','Tracker']];$('nav').innerHTML=t.map(([k,l])=>`<button data-go="${k}" ${view===k?'aria-current="page"':''}>${l}</button>`).join('')}
+
+function home(){const a=S.aff[todayS];return`<div class="panel hero"><h1 class="bubble">Today is a<br>perfect day<br>to be proud<br>of all the<br>progress<br>you have<br>made!!<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21C5 15.5 2.5 12 3 8.5 3.6 5 8 4.2 12 8c4-3.8 8.4-3 9 .5.5 3.5-2 7-9 12.5z" fill="#f27cae"/><ellipse cx="7.3" cy="7.6" rx="2.4" ry="1.6" fill="#f7a3c6" transform="rotate(-30 7.3 7.6)"/></svg></h1>${a?`<p class="aff">${esc(a)}</p>`:''}<button class="pill" data-go="cal">Open my calendar</button></div>`}
+
+function cal(){const first=new Date(yr,mo,1).getDay(),dim=new Date(yr,mo+1,0).getDate();
+let cells=['S','M','T','W','T','F','S'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(first);
+for(let d=1;d<=dim;d++){const ds=yr+'-'+pad(mo+1)+'-'+pad(d),st=status(ds);cells+=`<button class="day${ds===todayS?' today':''}${S.notes[ds]?' note':''}" data-day="${ds}" aria-pressed="${ds===sel}" aria-label="${MN[mo]} ${d}${st==='full'?', all habits done':''}${S.notes[ds]?', has a note':''}">${d}<span class="mini star ${st}${st==='full'?' glitter':''}"></span></button>`}
+const sd=parse(sel),hs=appl(sel),future=sel>todayS;
+const g=S.goals[sel],ns=nextD(sel),nd=parse(ns),tg=S.goals[ns]||{};
+const goalRow=g&&g.t?`<div class="hrow"><div class="hname"><span class="mute" style="display:block;font-size:.95rem">Goal for today</span>${esc(g.t)}</div>${future?'<span class="mute">not yet!</span>':`<button class="chk${g.d?' on':''}" data-goal aria-pressed="${!!g.d}" aria-label="Goal: ${g.d?'done':'not done'}">${g.d?'✓':''}</button>`}</div>`:'';
+const rows=hs.length?hs.map(h=>{const on=done(sel,h.id);return`<div class="hrow"><div class="hname">${esc(h.name)}<button data-del="${h.id}">remove</button></div>${future?'<span class="mute">not yet!</span>':`<button class="stk star${on?' done glitter':''}" data-mark="${h.id}" aria-pressed="${on}" aria-label="${esc(h.name)}: ${on?'done':'not done'}"></button>`}</div>`}).join('')+(future?'':'<p class="mute">Tap a star when you\'ve done the habit. Tap again to take it off.</p>'):'<p class="mute">No habits for this day yet. Add one below!</p>';
+return`<div class="panel"><div class="mhead"><button data-m="-1" aria-label="Previous month">‹</button><h2>${MN[mo]} ${yr}</h2><button data-m="1" aria-label="Next month">›</button></div><div class="cal">${cells}</div></div>
+<div class="panel"><h2>${sd.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</h2>${goalRow}${rows}</div>
+<div class="panel"><h2>Affirmation</h2><input id="af" class="txt" type="text" maxlength="120" placeholder="I am…" aria-label="Affirmation for the day" value="${esc(S.aff[sel]||'')}"></div>
+<div class="panel"><h2>About my day</h2><textarea id="jn" maxlength="300" placeholder="A little something about today…" aria-label="Short summary of the day">${esc(S.notes[sel]||'')}</textarea></div>
+<div class="panel"><h2>Goal for tomorrow</h2><p class="mute">It will show at the top of ${nd.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}.</p><input id="gt" class="txt" type="text" maxlength="100" placeholder="Tomorrow I will…" aria-label="Goal for tomorrow" value="${esc(tg.t||'')}"></div>
+<div class="panel"><h2>Add a habit</h2><p class="mute">Enter it once. It repeats every day starting ${sd.toLocaleDateString(undefined,{month:'short',day:'numeric'})}.</p><div class="add"><input id="hn" type="text" placeholder="Exercise, water, read…" maxlength="40" aria-label="Habit name"><button class="pill" data-add>Add</button></div></div>`}
+
+function stats(){if(!S.habits.length)return`<div class="panel empty"><h2>Nothing here yet</h2><p class="mute">Add a habit on the calendar and your stickers will show up here.</p><p><button class="pill" data-go="cal">Go to calendar</button></p></div>`;
+const n=new Date(),ws=new Date(n.getFullYear(),n.getMonth(),n.getDate()-n.getDay()),we=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+6),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+const P=[['This week',ws,we],['This month',new Date(n.getFullYear(),n.getMonth(),1),new Date(n.getFullYear(),n.getMonth()+1,0)],['This year',new Date(n.getFullYear(),0,1),new Date(n.getFullYear(),11,31)]];
+return S.habits.map(h=>{let st='';for(let d=1;d<=dim;d++){const ds=n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(d),on=done(ds,h.id);st+=`<span class="tiny star${on?' glitter':''}${!on&&(ds>todayS||ds<h.start)?' faint':''}" title="${ds}"></span>`}
+return`<div class="panel"><h2>${esc(h.name)}</h2>`+P.map(([l,a,b])=>{const[y,t]=count(h,a,b),p=t?Math.round(y/t*100):0;return`<div class="stat"><div><span>${l}</span><span>${y}/${t}</span></div><div class="bar" role="img" aria-label="${p} percent"><span class="glitter" style="width:${p}%"></span></div></div>`}).join('')+`<p class="mute" style="margin-top:12px">Stickers this month</p><div class="stick">${st}</div></div>`}).join('')+'<p class="mute" style="text-align:center">Counts days from when you added the habit up to today.</p>'}
+
+function render(){nav();$('app').innerHTML=view==='home'?home():view==='cal'?cal():stats()}
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+if(d.go){view=d.go;render();window.scrollTo(0,0)}
+else if(d.day){sel=d.day;render()}
+else if(d.m){mo+=+d.m;if(mo<0){mo=11;yr--}if(mo>11){mo=0;yr++}render()}
+else if(d.mark){const l=S.log[sel]=S.log[sel]||{};if(l[d.mark]===true)delete l[d.mark];else l[d.mark]=true;save();render()}
+else if(d.del){if(confirm('Remove this habit and its history?')){S.habits=S.habits.filter(h=>h.id!==d.del);for(const k in S.log)delete S.log[k][d.del];save();render()}}
+else if('goal' in d){const g=S.goals[sel];if(g){g.d=!g.d;save();render()}}
+else if('add' in d){const v=$('hn').value.trim();if(!v)return;S.habits.push({id:'h'+Date.now(),name:v,start:sel});save();render()}});
+document.addEventListener('input',e=>{const id=e.target.id,v=e.target.value;if(id==='jn'){if(v.trim())S.notes[sel]=v;else delete S.notes[sel]}else if(id==='af'){if(v.trim())S.aff[sel]=v;else delete S.aff[sel]}else if(id==='gt'){const k=nextD(sel);if(v.trim()){S.goals[k]=S.goals[k]||{};S.goals[k].t=v}else delete S.goals[k]}else return;save()});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='hn')document.querySelector('[data-add]').click()});
+render();
+</script>
+</body>
+</html>
